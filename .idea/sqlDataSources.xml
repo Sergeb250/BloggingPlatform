@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDataSourceStorage">
+    <option name="dataSources">
+      <list>
+        <State>
+          <option name="id" value="b1f57fb8-ed8d-4e90-8720-124a3f6b3d1e" />
+          <option name="name" value="bloggingPlatform (01_schema.sql)" />
+          <option name="dbmsName" value="MYSQL" />
+          <option name="urls">
+            <array>
+              <option value="file://$PROJECT_DIR$/docs/sql/01_schema.sql" />
+            </array>
+          </option>
+          <option name="autoSync" value="true" />
+        </State>
+      </list>
+    </option>
+  </component>
+</project>
