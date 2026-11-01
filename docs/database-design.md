@@ -5,7 +5,7 @@
 | **Phase** | 1 — Database Design & Modeling ([phases.md](../phases.md)) |
 | **User stories** | 1.1 (conceptual, logical, physical models), 1.2 (keys, indexes, integrity) |
 | **DBMS** | MySQL 8.0 (InnoDB, `utf8mb4`) |
-| **Scripts** | [`sql/01_schema.sql`](sql/01_schema.sql) · [`sql/02_seed.sql`](sql/02_seed.sql) · [`sql/03_verify.sql`](sql/03_verify.sql) |
+| **Scripts** | [`sql/01_schema.sql`](sql/01_schema.sql) (MySQL) · [`nosql/mongo-schema.js`](nosql/mongo-schema.js) (MongoDB) |
 | **ERD** | [`db erd.png`](db%20erd.png) |
 
 ---
@@ -31,7 +31,7 @@ structures (Phase 3), benchmark data and the NoSQL model for comments/reviews (P
 | **1.1** Physical model includes SQL data types, constraints and normalization (3NF) | [§5](#5-normalization-1nf--3nf), [§6](#6-physical-model), [`01_schema.sql`](sql/01_schema.sql) |
 | **1.2** Appropriate primary and foreign keys defined | [§4](#4-logical-model), [§8](#8-referential-integrity--constraints) |
 | **1.2** Indexes on frequently queried columns (post title, author ID, tag name) | [§7](#7-index-design) |
-| **1.2** Referential integrity enforced | [§8](#8-referential-integrity--constraints), tests in [`03_verify.sql`](sql/03_verify.sql) |
+| **1.2** Referential integrity enforced | [§8](#8-referential-integrity--constraints), tested by `DAOIntegrationTest` |
 
 ---
 
@@ -264,8 +264,7 @@ Transitive dependencies removed:
   (`post_id → author_id → username`). Only `author_id` is stored; details live in `users`.
 - `comments.post_title` or `comments.username` are likewise not stored.
 - **Derived values are not stored**: comment count, review count, average rating and a
-  post's tag list are computed with queries (see the overview query in
-  [`03_verify.sql`](sql/03_verify.sql)). If they ever need to be faster, Phase 3 can
+  post's tag list are computed with queries. If they ever need to be faster, Phase 3 can
   cache them in memory instead of denormalizing the tables.
 
 ### 5.5 Design decisions
@@ -337,6 +336,17 @@ for a fixed `a`.
 Every foreign key column is the leftmost column of at least one index, so FK checks and
 cascading deletes never scan a whole child table.
 
+**What `01_schema.sql` creates today:**
+- the primary and unique keys;
+- the indexes MySQL makes for the foreign keys;
+- since Phase 4, `idx_posts_status_created`, `idx_posts_author_created` and `idx_posts_title`
+  (on an existing database, run the three `CREATE INDEX` statements once).
+
+They are measured in the [README, User Story 4.1](../README.md#user-story-41-before--after-performance-report): Discover's first page is
+179× faster on 100,000 posts. `ft_posts_title_content` was not created. Keyword search is served
+by the Phase 3 in-memory search index instead, and the README explains why a
+`LIKE '%word%'` cannot use these indexes.
+
 **Trade-off:** each secondary index speeds reads but adds work to every `INSERT`/`UPDATE`
 and uses disk. Indexes were only added for queries the application actually runs.
 Phase 4 measures each of them by timing the same queries with the index dropped and
@@ -397,51 +407,19 @@ service layer validates them before calling the DAO:
 
 ---
 
-## 9. Scripts and Verification
+## 9. Scripts
 
-| Order | Script | What it does |
-|-------|--------|--------------|
-| 1 | [`sql/01_schema.sql`](sql/01_schema.sql) | Drops and recreates database `blogging_platform` with all tables, keys, constraints and indexes. |
-| 2 | [`sql/02_seed.sql`](sql/02_seed.sql) | Inserts sample data: 6 users, 10 posts, 8 tags, 21 post-tag links, 14 comments, 11 reviews. Demo password for every account: `Password123!` (SHA-256). |
-| 3 | [`sql/03_verify.sql`](sql/03_verify.sql) | Lists the created indexes, FKs and CHECKs; runs 32 integrity tests in a rolled-back transaction; prints `EXPLAIN` plans for the title, author, tag and keyword lookups. |
+| Script | What it does |
+|--------|--------------|
+| [`sql/01_schema.sql`](sql/01_schema.sql) | Drops and re-creates the database `bloggingPlatform` with all tables, keys, CHECK rules and indexes. |
+| [`nosql/mongo-schema.js`](nosql/mongo-schema.js) | Creates the MongoDB collections `comments`, `reviews` and `counters` with validators, indexes, sample documents and example queries. |
 
-### 9.1 How to run (PowerShell, from the project root)
-
-```powershell
-$mysql = "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe"
-
-& $mysql -u root -p --default-character-set=utf8mb4 -e "source docs/sql/01_schema.sql"
-& $mysql -u root -p --default-character-set=utf8mb4 -e "source docs/sql/02_seed.sql"
-
-New-Item -ItemType Directory -Force docs/testing | Out-Null
-& $mysql -u root -p --default-character-set=utf8mb4 --table -e "source docs/sql/03_verify.sql" |
-    Out-File -Encoding utf8 docs/testing/phase-1-verify-output.txt
+```bash
+mysql -u root -p < docs/sql/01_schema.sql
+mongosh "<your Atlas connection string>" --file docs/nosql/mongo-schema.js
 ```
 
-In **MySQL Workbench**, open each file in order and run it with *Execute (⚡)*; screenshot the
-result grids of `03_verify.sql` instead of saving the text file.
-
-### 9.2 Expected results
-
-- Row counts: users 6, posts 10, comments 14, reviews 11, tags 8, post_tags 21.
-- Integrity summary: **passed = 32, failed = 0**. Each rejected test shows the MySQL error
-  it triggered, e.g. `1062` duplicate key, `1452` missing parent row, `3819` CHECK
-  violation, `1265` invalid ENUM value, `1048` NULL in a required column, `1406` value too long.
-- The seed data is unchanged afterwards (the test transaction is rolled back).
-- `EXPLAIN` lists `idx_posts_title`, `idx_posts_author_created`, `uq_tags_name` /
-  `idx_post_tags_tag` and `ft_posts_title_content` in the `key` column. With only seed-sized
-  tables the optimizer may occasionally choose a full scan; Phase 4 repeats the plans on
-  bulk data together with execution times.
-
-The saved output (`docs/testing/phase-1-verify-output.txt`) is the Phase 1 testing evidence
-referenced in [phases.md](../phases.md).
-
----
-
-## 10. Next Phases
-
-- **Phase 2** connects to this schema with JDBC `PreparedStatement`s (one DAO class per table),
-  checks duplicates in the services and turns MySQL errors into plain messages in the JavaFX UI.
-- **Phase 3** (planned) adds faster searching, sorting and in-memory caching.
-- **Phase 4** loads bulk data, benchmarks the indexes above, and models comments/reviews as
-  MongoDB documents for comparison with this relational design.
+The keys and integrity rules are tested against the real database by `DAOIntegrationTest`
+(duplicate username, rating outside 1-5, missing parent row, cascading deletes, rollback).
+How the schema is used, searched, cached and measured is described per user story in the
+[README](../README.md).
