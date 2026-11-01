@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Admin dashboard: totals, the best-rated and most-discussed posts, and activity per user. -->
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.bloggingplatform.controller.ReportController"
+            fitToWidth="true" hbarPolicy="NEVER" styleClass="dashboard-scroll">
+    <VBox styleClass="screen">
+        <HBox styleClass="screen-header">
+            <VBox HBox.hgrow="ALWAYS">
+                <Label text="Dashboard" styleClass="screen-title"/>
+                <Label text="Site activity at a glance. Counts come straight from the database." styleClass="screen-subtitle"/>
+            </VBox>
+        </HBox>
+        <HBox fx:id="statCards" styleClass="stat-cards"/>
+        <HBox styleClass="dashboard-row">
+            <VBox styleClass="panel" HBox.hgrow="ALWAYS">
+                <Label text="Top rated posts" styleClass="panel-title"/>
+                <VBox fx:id="topRated" styleClass="rank-list"/>
+            </VBox>
+            <VBox styleClass="panel" HBox.hgrow="ALWAYS">
+                <Label text="Most commented posts" styleClass="panel-title"/>
+                <VBox fx:id="mostCommented" styleClass="rank-list"/>
+            </VBox>
+        </HBox>
+        <VBox styleClass="panel">
+            <Label text="Activity by user" styleClass="panel-title"/>
+            <Label fx:id="activityHint" styleClass="hint"/>
+            <TableView fx:id="activityTable" prefHeight="330">
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS"/>
+                </columnResizePolicy>
+                <columns>
+                    <TableColumn fx:id="userColumn" text="User" prefWidth="130"/>
+                    <TableColumn fx:id="roleColumn" text="Role" prefWidth="85"/>
+                    <TableColumn fx:id="joinedColumn" text="Joined" prefWidth="105"/>
+                    <TableColumn fx:id="postsColumn" text="Posts" prefWidth="60"/>
+                    <TableColumn fx:id="publishedColumn" text="Published" prefWidth="80"/>
+                    <TableColumn fx:id="draftsColumn" text="Drafts" prefWidth="65"/>
+                    <TableColumn fx:id="commentsColumn" text="Comments" prefWidth="85"/>
+                    <TableColumn fx:id="reviewsColumn" text="Reviews" prefWidth="75"/>
+                    <TableColumn fx:id="ratingColumn" text="Rating received" prefWidth="115"/>
+                    <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="100" minWidth="100" maxWidth="100"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </VBox>
+</ScrollPane>

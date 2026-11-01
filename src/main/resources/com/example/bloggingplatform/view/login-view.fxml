@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Sign-in page: a card with the brand panel on the left and the sign-in or registration form
+     on the right (the "Create an account" / "Sign in" links switch between the two forms). -->
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.bloggingplatform.controller.LoginController" styleClass="login-page">
+    <HBox styleClass="login-card" maxWidth="880" maxHeight="560">
+        <VBox styleClass="login-brand" prefWidth="360" minWidth="300">
+            <StackPane fx:id="brandLogo" styleClass="brand-logo" alignment="CENTER_LEFT"/>
+            <Label text="Smart Blogging Platform" styleClass="brand-title" wrapText="true"/>
+            <Label text="Read. Write. Share." styleClass="brand-tagline"/>
+            <Region VBox.vgrow="ALWAYS" minHeight="20"/>
+            <Label fx:id="readFeature" text="Readers discover posts, comment and rate them" styleClass="brand-feature"
+                   wrapText="true"/>
+            <Label fx:id="writeFeature" text="Authors write drafts and publish them" styleClass="brand-feature"
+                   wrapText="true"/>
+            <Label fx:id="manageFeature" text="share Ideas" styleClass="brand-feature"
+                   wrapText="true"/>
+        </VBox>
+
+        <!-- scrolls only when the window is too short for the registration form -->
+        <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" styleClass="login-scroll" HBox.hgrow="ALWAYS">
+            <StackPane styleClass="login-forms">
+                <!-- sign in -->
+                <VBox fx:id="signInForm" styleClass="login-form" maxHeight="-Infinity">
+                    <Label text="Welcome back" styleClass="login-heading"/>
+                    <Label text="Sign in with your username or email address." styleClass="login-sub" wrapText="true"/>
+                    <Label fx:id="signInMessage" styleClass="form-message" wrapText="true" maxWidth="Infinity"/>
+    
+                    <Label text="Username or email" styleClass="field-label"/>
+                    <TextField fx:id="loginField" promptText="e.g. alice or alice@example.com"/>
+                    <Label fx:id="loginError" styleClass="field-error" wrapText="true"/>
+    
+                    <Label text="Password" styleClass="field-label"/>
+                    <PasswordField fx:id="passwordField"/>
+                    <Label fx:id="passwordError" styleClass="field-error" wrapText="true"/>
+                    <Region minHeight="14"/>
+    
+                    <Button fx:id="signInButton" text="Sign in" styleClass="btn-primary" maxWidth="Infinity"
+                            onAction="#onSignIn"/>
+                    <HBox styleClass="login-switch">
+                        <Label text="New here?"/>
+                        <Hyperlink text="Create an account" onAction="#onShowRegister"/>
+                    </HBox>
+                </VBox>
+    
+                <!-- register -->
+                <VBox fx:id="registerForm" styleClass="login-form" maxHeight="-Infinity" visible="false" managed="false">
+                    <Label text="Create your account" styleClass="login-heading"/>
+                    <Label text="Join as a reader to read, comment and rate, or as an author to write."
+                           styleClass="login-sub" wrapText="true"/>
+                    <Label fx:id="registerMessage" styleClass="form-message" wrapText="true" maxWidth="Infinity"/>
+    
+                    <HBox styleClass="form-row">
+                        <VBox HBox.hgrow="ALWAYS" styleClass="form-cell">
+                            <Label text="Username" styleClass="field-label"/>
+                            <TextField fx:id="usernameField" promptText="e.g. alice or alice_92"/>
+                            <Label text="Starts with a letter; letters, digits, . _ -" styleClass="hint" wrapText="true" minHeight="-Infinity"/>
+                            <Label fx:id="usernameError" styleClass="field-error" wrapText="true"/>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS" styleClass="form-cell">
+                            <Label text="Email" styleClass="field-label"/>
+                            <TextField fx:id="emailField" promptText="name@example.com"/>
+                            <Label fx:id="emailError" styleClass="field-error" wrapText="true"/>
+                        </VBox>
+                    </HBox>
+                    <HBox styleClass="form-row">
+                        <VBox HBox.hgrow="ALWAYS" styleClass="form-cell">
+                            <Label text="Password" styleClass="field-label"/>
+                            <PasswordField fx:id="newPasswordField" promptText="6+ characters"/>
+                            <Label text="Letters, a number and a symbol, e.g. ! @ # $ -" styleClass="hint" wrapText="true" minHeight="-Infinity"/>
+                            <Label fx:id="newPasswordError" styleClass="field-error" wrapText="true"/>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS" styleClass="form-cell">
+                            <Label text="Repeat password" styleClass="field-label"/>
+                            <PasswordField fx:id="confirmField"/>
+                            <Label fx:id="confirmError" styleClass="field-error" wrapText="true"/>
+                        </VBox>
+                    </HBox>
+    
+                    <Label text="Account type" styleClass="field-label"/>
+                    <HBox fx:id="roleChoices" styleClass="role-choices"/>
+                    <Label fx:id="roleError" styleClass="field-error" wrapText="true"/>
+                    <Region minHeight="10"/>
+    
+                    <Button fx:id="registerButton" text="Create account" styleClass="btn-create" maxWidth="Infinity"
+                            onAction="#onRegister"/>
+                    <HBox styleClass="login-switch">
+                        <Label text="Already have an account?"/>
+                        <Hyperlink text="Sign in" onAction="#onShowSignIn"/>
+                    </HBox>
+                </VBox>
+            </StackPane>
+        </ScrollPane>
+    </HBox>
+</StackPane>

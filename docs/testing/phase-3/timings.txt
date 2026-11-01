@@ -1,0 +1,17 @@
+# Phase 3 timings — 2026-11-01 19:20 +0200, java version "27" 2026-09-15, MySQL 8.0 on localhost
+# Produced by PerformanceTimingsTest (./mvnw test); averages after a warm-up. Times depend on the computer.
+
+Keyword search over 10000 generated posts (about 60 words each)
+query             matches    scan every post     search index  speed-up
+w7x                   294           19061 µs          50.8 µs      375x
+w1234x                285           15216 µs          27.8 µs      548x
+w42x w99x               4           14498 µs         108.0 µs      134x
+nothing                 0           12371 µs           3.6 µs     3456x
+Building the index once (each time the cache loads): 472438 µs
+
+Real MySQL data: 13 published posts
+operation                                 MySQL (Phase 2)    cache (hit)  speed-up
+Discover, first page                             38975 µs        28.0 µs     1394x
+Discover, search "java"                          32091 µs        32.6 µs      983x
+Open one post (find by id)                       12296 µs         0.5 µs    27324x
+Cache miss (load every post + build the index): 22751 µs

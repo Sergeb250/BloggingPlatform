@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Discover: the published posts as blog cards from the in-memory cache. The search bar finds
+     posts by keyword, tag or author (ignoring case); the tag and author boxes narrow the list, the
+     sort box orders it; a click on a card opens the post. -->
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.bloggingplatform.controller.FeedController" styleClass="screen">
+    <VBox>
+        <HBox styleClass="screen-header">
+            <Label text="Discover" styleClass="screen-title"/>
+            <!-- the filters sit beside the title, a size smaller than elsewhere -->
+            <FlowPane styleClass="filter-bar, compact" HBox.hgrow="ALWAYS">
+                <Label text="Tag" styleClass="filter-label"/>
+                <ComboBox fx:id="tagFilter" prefWidth="140" onAction="#onFilterChanged"/>
+                <Label text="Author" styleClass="filter-label"/>
+                <ComboBox fx:id="authorFilter" prefWidth="155" onAction="#onFilterChanged"/>
+                <Label text="Sort" styleClass="filter-label"/>
+                <ComboBox fx:id="sortBox" prefWidth="130" onAction="#onFilterChanged"/>
+                <Button text="Reset filters" onAction="#onResetFilters"/>
+            </FlowPane>
+        </HBox>
+        <Label fx:id="summary" styleClass="screen-subtitle"/>
+    </VBox>
+    <ScrollPane fx:id="scroll" fitToWidth="true" hbarPolicy="NEVER" styleClass="feed-scroll" VBox.vgrow="ALWAYS">
+        <StackPane alignment="TOP_CENTER" styleClass="feed-page">
+            <VBox fx:id="cards" styleClass="feed" maxWidth="900"/>
+        </StackPane>
+    </ScrollPane>
+    <HBox styleClass="pager">
+        <Pagination fx:id="pagination" maxPageIndicatorCount="7"/>
+    </HBox>
+</VBox>

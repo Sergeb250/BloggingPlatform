@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+
+<!-- The window itself: our own title bar (the stage has no OS decoration) and a page area that
+     shows either the sign-in page or the signed-in workspace. The outer StackPane keeps a
+     transparent margin around the window for its shadow and for grabbing the edges. -->
+<StackPane fx:id="windowRoot" styleClass="window-root" xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.bloggingplatform.controller.MainController">
+    <Region styleClass="window-shadow"/>
+    <BorderPane styleClass="window">
+        <top>
+            <HBox fx:id="titleBar" styleClass="title-bar">
+                <StackPane fx:id="logoBox" styleClass="title-logo"/>
+                <Label text="Smart Blogging Platform" styleClass="title-text"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="minimizeButton" styleClass="window-button" focusTraversable="false"
+                        onAction="#onMinimize">
+                    <tooltip><Tooltip text="Minimize"/></tooltip>
+                </Button>
+                <Button fx:id="maximizeButton" styleClass="window-button" focusTraversable="false"
+                        onAction="#onMaximize">
+                    <tooltip><Tooltip fx:id="maximizeTip" text="Maximize"/></tooltip>
+                </Button>
+                <Button fx:id="closeButton" styleClass="window-button, window-close" focusTraversable="false"
+                        onAction="#onClose">
+                    <tooltip><Tooltip text="Close"/></tooltip>
+                </Button>
+            </HBox>
+        </top>
+        <center>
+            <StackPane fx:id="page" styleClass="page"/>
+        </center>
+    </BorderPane>
+</StackPane>

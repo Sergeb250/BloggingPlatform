@@ -1,0 +1,29 @@
+# Phase 3 JUnit run — 2026-11-01 19:20 +0200 (cache, search index, merge sort, binary search)
+# Command: ./mvnw test   (Java 27, MySQL 8.0 running, connection from config/DBConnection)
+
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.algorithms.BinarySearchTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.algorithms.MergeSortTest
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.cache.SearchIndexTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.controller.SearchMatchTest
+Tests run: 16, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.dao.DAOIntegrationTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.dao.DaoExceptionTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.dao.impl.PostDAOImplTest
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.service.AccessRulesTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.service.AuthServiceTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.service.CacheIntegrationTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.service.CommentServiceTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.service.PerformanceTimingsTest
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.service.PostCacheTest
+Tests run: 19, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.service.PostServiceTest
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.service.ReviewServiceTest
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.service.TagServiceTest
+Tests run: 9, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.service.UserServiceTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.util.PasswordHasherTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.util.WindowFrameTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.validations.CommentValidatorTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.validations.PostValidatorTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.validations.ReviewValidatorTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.validations.TagValidatorTest
+Tests run: 47, Failures: 0, Errors: 0, Skipped: 0 -- in com.example.bloggingplatform.validations.UserValidatorTest
+
+TOTAL  Tests run: 181, Failures: 0, Errors: 0, Skipped: 0

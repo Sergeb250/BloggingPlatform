@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Reading view of one post. Middle: only the article. Right panel: the ratings (click a star
+     to rate in a pop-up) and the comments / reviews, each scrolling on its own. -->
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.bloggingplatform.controller.ArticleController" styleClass="article-layout">
+
+    <ScrollPane fx:id="scroll" fitToWidth="true" hbarPolicy="NEVER" styleClass="article-scroll" HBox.hgrow="ALWAYS">
+        <StackPane alignment="TOP_CENTER" styleClass="article-page">
+            <VBox fx:id="article" styleClass="article" maxWidth="760">
+                <HBox styleClass="article-top">
+                    <Button fx:id="backButton" text="Back" styleClass="btn-link" onAction="#onBack"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="statusBadge" text="Draft" styleClass="status-badge, draft"/>
+                </HBox>
+                <FlowPane fx:id="tagBox" styleClass="tag-row"/>
+                <Label fx:id="titleLabel" styleClass="article-title" wrapText="true"/>
+                <HBox fx:id="metaBox" styleClass="article-meta"/>
+                <Label fx:id="draftNote" styleClass="note" wrapText="true"/>
+                <Separator/>
+                <VBox fx:id="body" styleClass="article-body"/>
+            </VBox>
+        </StackPane>
+    </ScrollPane>
+
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="side-scroll"
+                prefWidth="350" minWidth="300" maxWidth="380">
+        <VBox styleClass="article-side">
+            <!-- ratings -->
+            <VBox styleClass="side-card">
+                <Label text="Ratings" styleClass="side-title"/>
+                <HBox styleClass="rating-head">
+                    <Label fx:id="averageLabel" styleClass="rating-big"/>
+                    <VBox styleClass="rating-head-text">
+                        <Label fx:id="averageStars" styleClass="stars"/>
+                        <Label fx:id="reviewCount" styleClass="hint"/>
+                    </VBox>
+                </HBox>
+                <VBox fx:id="distribution" styleClass="rating-bars"/>
+                <VBox fx:id="rateBox" styleClass="rate-box">
+                    <Label fx:id="rateHint" text="Click a star to rate this post" styleClass="rate-hint"/>
+                    <HBox fx:id="starPicker" styleClass="star-picker"/>
+                </VBox>
+                <Label fx:id="reviewNote" styleClass="note" wrapText="true"/>
+            </VBox>
+
+            <!-- comments / reviews -->
+            <HBox styleClass="segmented">
+                <ToggleButton fx:id="commentsTab" text="Comments" styleClass="segment" maxWidth="Infinity"
+                              HBox.hgrow="ALWAYS"/>
+                <ToggleButton fx:id="reviewsTab" text="Reviews" styleClass="segment" maxWidth="Infinity"
+                              HBox.hgrow="ALWAYS"/>
+            </HBox>
+            <Button fx:id="writeCommentButton" text="Write a comment" styleClass="btn-create" maxWidth="Infinity"
+                    onAction="#onWriteComment"/>
+            <Label fx:id="commentNote" styleClass="note" wrapText="true"/>
+            <VBox fx:id="itemList" styleClass="item-list"/>
+        </VBox>
+    </ScrollPane>
+</HBox>

@@ -1,0 +1,1637 @@
+/*
+ * Smart Blogging Platform theme: white first.
+ *
+ * Warm off-white surfaces, light grey panels and cards, hairline dividers, black text with grey
+ * secondary text. Black is kept for buttons and icons only. The only colours are the action
+ * buttons:   Create = green   Update = orange   Delete = red   Search = blue
+ * and red for validation errors (messages, banners, outlines of wrong fields).
+ *
+ * The palette is defined once in .root (looked-up colours) and used everywhere below.
+ * Rules in a scene stylesheet override JavaFX's built-in Modena theme.
+ */
+
+/* ---------- Palette ---------- */
+.root {
+    /* all text is Xmind; a few titles use the handwriting font Zeyada (see the end of this file) */
+    -fx-font-family: "Xmind";
+    -fx-font-size: 13px;
+
+    -paper: #fbfaf8;          /* main background */
+    -panel: #f4f2ef;          /* title bar, sidebar, header rows */
+    -tint: #efedea;           /* cards, hover */
+    -tint-strong: #e6e3df;    /* selected pill, selected row */
+    -line: #e3e0db;           /* hairline dividers */
+    -border: #cdc8c2;         /* input outlines */
+    -ink: #000000;            /* buttons, icons */
+    -text: #141414;           /* body text */
+    -muted: #66625d;          /* secondary text */
+    -danger: #d93025;         /* validation messages and error pop-ups (same red as Delete) */
+    -danger-soft: #fce8e6;    /* background of the error banner */
+
+    -fx-background-color: -paper;
+    -fx-base: #ffffff;
+    -fx-color: #ffffff;
+    -fx-hover-base: #ffffff;
+    -fx-pressed-base: #ffffff;
+    -fx-body-color: #ffffff;
+    -fx-background: -paper;
+    -fx-control-inner-background: #ffffff;
+    -fx-control-inner-background-alt: #ffffff;
+    -fx-outer-border: -border;
+    -fx-inner-border: #ffffff;
+    -fx-box-border: -border;
+    -fx-text-box-border: -border;
+    -fx-shadow-highlight-color: transparent;
+    -fx-accent: -ink;
+    -fx-default-button: -ink;
+    -fx-focus-color: -ink;
+    -fx-faint-focus-color: transparent;
+    -fx-selection-bar: -tint-strong;
+    -fx-selection-bar-non-focused: -tint-strong;
+    -fx-selection-bar-text: -text;
+    -fx-mark-color: -ink;
+    -fx-mark-highlight-color: transparent;
+    -fx-text-base-color: -text;
+    -fx-text-background-color: -text;
+    -fx-text-inner-color: -text;
+    -fx-prompt-text-fill: #9a958f;
+    -fx-dark-text-color: -text;
+    -fx-mid-text-color: -text;
+    -fx-light-text-color: #ffffff;
+    -fx-table-cell-border-color: -line;
+    -fx-table-header-border-color: -line;
+}
+
+.label {
+    -fx-text-fill: -text;
+}
+
+/* greyscale anti-aliasing: Windows' default (ClearType) adds coloured fringes to text */
+.text {
+    -fx-font-smoothing-type: gray;
+}
+
+.icon {
+    -fx-fill: -ink;
+}
+
+/* ---------- Window: rounded off-white window with a light border and a soft shadow ---------- */
+.window-root {
+    /* nearly invisible, but it still catches the mouse in the shadow margin, for resizing */
+    -fx-background-color: rgba(0, 0, 0, 0.004);
+}
+
+.window-shadow {
+    -fx-background-color: -paper;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.28), 18, 0.05, 0, 4);
+}
+
+.window {
+    -fx-background-color: -paper;
+    -fx-background-radius: 12;
+    -fx-border-color: -border;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+}
+
+.title-bar {
+    -fx-background-color: -panel;
+    -fx-background-radius: 11 11 0 0;
+    -fx-border-color: transparent transparent -line transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 6 8 6 14;
+    -fx-spacing: 10;
+    -fx-alignment: center-left;
+    -fx-min-height: 40;
+}
+
+.title-text {
+    -fx-font-weight: bold;
+    -fx-font-size: 13.5px;
+}
+
+.page {
+    -fx-background-color: -paper;
+    -fx-background-radius: 0 0 11 11;
+}
+
+.window-root.maximized .window-shadow,
+.window-root.maximized .window {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 0;
+    -fx-effect: null;
+}
+
+.window-root.maximized .title-bar,
+.window-root.maximized .page,
+.window-root.maximized .sidebar,
+.window-root.maximized .content,
+.window-root.maximized .login-page,
+.window-root.maximized .screen-host {
+    -fx-background-radius: 0;
+}
+
+/* ---------- Buttons: flat black pills with white text ---------- */
+.button {
+    -fx-background-color: -ink;
+    -fx-background-insets: 0;
+    -fx-background-radius: 20;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-padding: 7 16 7 16;
+    -fx-cursor: hand;
+    -fx-graphic-text-gap: 7;
+    /* constant border size, only its colour changes on focus, so buttons never jump */
+    -fx-border-color: transparent;
+    -fx-border-width: 1;
+    -fx-border-insets: 2;
+    -fx-border-radius: 18;
+}
+
+.button .icon {
+    -fx-fill: #ffffff;
+}
+
+.button:hover {
+    -fx-background-color: #2b2b2b;
+}
+
+.button:pressed {
+    -fx-background-color: #000000;
+    -fx-translate-y: 1;
+}
+
+.button:focus-visible {
+    -fx-border-color: rgba(255, 255, 255, 0.85);
+    -fx-border-style: segments(2, 2);
+}
+
+.button:disabled {
+    -fx-opacity: 0.4;
+}
+
+/* ---------- Action buttons: the only colours in the app ---------- */
+.button.btn-create {
+    -fx-background-color: #1e8e3e;
+}
+
+.button.btn-create:hover {
+    -fx-background-color: #23a047;
+}
+
+.button.btn-update {
+    -fx-background-color: #e8710a;
+}
+
+.button.btn-update:hover {
+    -fx-background-color: #f57e12;
+}
+
+.button.btn-delete {
+    -fx-background-color: #d93025;
+}
+
+.button.btn-delete:hover {
+    -fx-background-color: #e5392e;
+}
+
+.button.btn-search {
+    -fx-background-color: #1a73e8;
+}
+
+.button.btn-search:hover {
+    -fx-background-color: #2a80f0;
+}
+
+/* compact round icon buttons in table rows and comment cards */
+.button.btn-icon {
+    -fx-padding: 5;
+    -fx-min-width: 28;
+    -fx-min-height: 28;
+    -fx-background-radius: 14;
+}
+
+/* wide black call-to-action (Sign in) */
+.button.btn-primary {
+    -fx-padding: 10 16 10 16;
+    -fx-font-size: 14px;
+}
+
+/* text buttons: Back, post titles in the dashboard */
+.button.btn-link {
+    -fx-background-color: transparent;
+    -fx-text-fill: -text;
+    -fx-padding: 4 6 4 6;
+    -fx-alignment: center-left;
+}
+
+.button.btn-link .icon {
+    -fx-fill: -ink;
+}
+
+.button.btn-link:hover {
+    -fx-underline: true;
+    -fx-background-color: transparent;
+}
+
+.button.btn-read {
+    -fx-padding: 5 14 5 14;
+}
+
+/* tag chip: white with a light outline */
+.button.tag-chip {
+    -fx-background-color: -border, #ffffff;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 14, 13;
+    -fx-text-fill: -text;
+    -fx-font-weight: normal;
+    -fx-font-size: 12px;
+    -fx-padding: 3 10 3 10;
+}
+
+.button.tag-chip:hover {
+    -fx-background-color: -ink, #ffffff;
+}
+
+.hyperlink {
+    -fx-text-fill: -text;
+    -fx-font-weight: bold;
+    -fx-underline: true;
+    -fx-border-color: transparent;
+    -fx-padding: 0 2 0 2;
+}
+
+.hyperlink:visited {
+    -fx-text-fill: -text;
+}
+
+/* ---------- Window and pop-up controls (minimize, maximize, close) ---------- */
+.button.window-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6;
+    -fx-padding: 0;
+    -fx-min-width: 36;
+    -fx-pref-width: 36;
+    -fx-min-height: 28;
+    -fx-pref-height: 28;
+    -fx-border-color: transparent;
+}
+
+.button.window-button .icon {
+    -fx-fill: -ink;
+}
+
+.button.window-button:hover {
+    -fx-background-color: -tint-strong;
+}
+
+.button.window-button:pressed {
+    -fx-background-color: -border;
+    -fx-translate-y: 0;
+}
+
+.button.window-close:hover {
+    -fx-background-color: -ink;
+}
+
+.button.window-close:hover .icon {
+    -fx-fill: #ffffff;
+}
+
+/* ---------- Text input: white with a light outline, black when focused ---------- */
+.text-field {
+    -fx-background-color: -border, #ffffff;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 10, 9;
+    -fx-text-fill: -text;
+    -fx-highlight-fill: -tint-strong;
+    -fx-highlight-text-fill: -text;
+    -fx-padding: 8 12 8 12;
+}
+
+.text-field:focused {
+    -fx-background-color: -ink, #ffffff;
+    -fx-background-insets: 0, 1.5;
+}
+
+.text-area {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+    -fx-border-color: -border;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-padding: 1;
+    -fx-text-fill: -text;
+    -fx-highlight-fill: -tint-strong;
+    -fx-highlight-text-fill: -text;
+}
+
+.text-area:focused {
+    -fx-border-color: -ink;
+    -fx-border-width: 1.5;
+    -fx-padding: 0.5;
+}
+
+.text-area .content,
+.text-area .scroll-pane,
+.text-area .viewport {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+}
+
+.text-area .content {
+    -fx-padding: 6 8 6 8;
+}
+
+/* ---------- Combo boxes ---------- */
+.combo-box-base {
+    -fx-background-color: -border, #ffffff;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 10, 9;
+}
+
+.combo-box-base:focused,
+.combo-box-base:showing {
+    -fx-background-color: -ink, #ffffff;
+    -fx-background-insets: 0, 1.5;
+}
+
+.combo-box-base > .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 12 0 8;
+}
+
+.combo-box-base > .arrow-button > .arrow {
+    -fx-background-color: -ink;
+}
+
+.combo-box > .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -text;
+    -fx-padding: 7 12 7 12;
+}
+
+/* locked combo box (post and writer of an existing comment/review): dashed outline */
+.combo-box-base:disabled {
+    -fx-opacity: 1;
+    -fx-background-color: -panel;
+    -fx-border-color: -border;
+    -fx-border-style: segments(4, 3);
+    -fx-border-radius: 10;
+}
+
+.combo-box-base:disabled > .arrow-button > .arrow {
+    -fx-background-color: -muted;
+}
+
+.combo-box-popup > .list-view {
+    -fx-background-color: -line, #ffffff;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 10, 9;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 12, 0, 0, 3);
+}
+
+.combo-box-popup .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -text;
+    -fx-padding: 7 12 7 12;
+}
+
+.combo-box-popup .list-cell:filled:hover,
+.combo-box-popup .list-cell:filled:selected {
+    -fx-background-color: -tint-strong;
+    -fx-text-fill: -text;
+}
+
+/* ---------- List views and check boxes ---------- */
+.list-view {
+    -fx-background-color: -border, #ffffff;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 10, 9;
+    -fx-padding: 2;
+}
+
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -text;
+}
+
+.list-cell:filled:selected {
+    -fx-background-color: -tint-strong;
+    -fx-text-fill: -text;
+}
+
+.check-box {
+    -fx-text-fill: -text;
+}
+
+.check-box > .box {
+    -fx-background-color: -border, #ffffff;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 4, 3;
+}
+
+.check-box > .box > .mark {
+    -fx-background-color: transparent;
+}
+
+.check-box:selected > .box {
+    -fx-background-color: -ink;
+}
+
+.check-box:selected > .box > .mark {
+    -fx-background-color: #ffffff;
+}
+
+/* ---------- Tables: light header, hairline rows, light grey selection ---------- */
+.table-view {
+    -fx-background-color: -line, #ffffff;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 14, 13;
+    -fx-padding: 1;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: -panel;
+    -fx-background-radius: 13 13 0 0;
+    -fx-border-color: transparent transparent -line transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view .column-header,
+.table-view .filler {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header {
+    -fx-border-color: transparent;
+    -fx-size: 38;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: -muted;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-alignment: center-left;
+    -fx-padding: 0 10 0 10;
+}
+
+.table-view .column-header .arrow,
+.table-view .show-hide-columns-button .show-hide-column-image {
+    -fx-background-color: -muted;
+}
+
+.table-view .show-hide-columns-button {
+    -fx-background-color: transparent;
+}
+
+.table-row-cell {
+    -fx-background-color: -line, #ffffff;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-text-fill: -text;
+    -fx-cell-size: 44;
+}
+
+.table-row-cell:filled:hover {
+    -fx-background-color: -line, -paper;
+}
+
+.table-row-cell:empty {
+    -fx-background-color: #ffffff;
+}
+
+.table-row-cell:filled:selected {
+    -fx-background-color: -line, -tint-strong;
+}
+
+.table-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: -text;
+    -fx-padding: 0 10 0 10;
+    -fx-alignment: center-left;
+}
+
+.table-row-cell:filled:selected > .table-cell {
+    -fx-text-fill: -text;
+}
+
+.table-view .placeholder .label {
+    -fx-text-fill: -muted;
+    -fx-font-size: 14px;
+}
+
+.table-view .corner {
+    -fx-background-color: -panel;
+}
+
+/* ---------- Scroll bars: thin grey thumb ---------- */
+.scroll-bar {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.scroll-bar > .track,
+.scroll-bar > .track-background {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.scroll-bar > .thumb {
+    -fx-background-color: #c9c4be;
+    -fx-background-insets: 3;
+    -fx-background-radius: 6;
+}
+
+.scroll-bar > .thumb:hover {
+    -fx-background-color: #a9a39d;
+}
+
+.scroll-bar > .increment-button,
+.scroll-bar > .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 2 0 2;
+}
+
+.scroll-bar > .increment-button > .increment-arrow,
+.scroll-bar > .decrement-button > .decrement-arrow {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane,
+.scroll-pane:focused {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.scroll-pane > .viewport,
+.scroll-pane > .corner {
+    -fx-background-color: transparent;
+}
+
+/* ---------- Pagination ---------- */
+.pagination {
+    -fx-page-information-visible: false;   /* the screens show their own "Showing x-y of z" text */
+    -fx-padding: 0;
+}
+
+.pagination > .pagination-control {
+    -fx-background-color: transparent;
+    -fx-font-size: 12px;
+}
+
+.pagination > .pagination-control > .control-box > .number-button,
+.pagination > .pagination-control > .control-box > .left-arrow-button,
+.pagination > .pagination-control > .control-box > .right-arrow-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 14;
+    -fx-text-fill: -text;
+}
+
+.pagination > .pagination-control > .control-box > .number-button:hover {
+    -fx-background-color: -tint;
+}
+
+.pagination > .pagination-control > .control-box > .number-button:selected {
+    -fx-background-color: -ink;
+    -fx-text-fill: #ffffff;
+}
+
+.pagination > .pagination-control > .control-box > .left-arrow-button > .left-arrow,
+.pagination > .pagination-control > .control-box > .right-arrow-button > .right-arrow {
+    -fx-background-color: -ink;
+}
+
+/* ---------- Progress bars (rating distribution) ---------- */
+.progress-bar > .track {
+    -fx-background-color: -tint-strong;
+    -fx-background-insets: 0;
+    -fx-background-radius: 6;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: -ink;
+    -fx-background-insets: 0;
+    -fx-background-radius: 6;
+    -fx-padding: 4;
+}
+
+.separator .line {
+    -fx-border-color: -line;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* ---------- Pop-ups: white rectangles with a light border ---------- */
+.popup-root {
+    /* nearly invisible, but it still catches the mouse in the shadow margin, for resizing */
+    -fx-background-color: rgba(0, 0, 0, 0.004);
+}
+
+.popup-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 0;   /* pop-ups are plain rectangles */
+    -fx-border-color: -border;
+    -fx-border-width: 1;
+    -fx-border-radius: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 14, 0.05, 0, 4);
+}
+
+.popup-title-bar {
+    -fx-background-color: -panel;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent transparent -line transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 6 6 6 16;
+    -fx-spacing: 8;
+    -fx-alignment: center-left;
+}
+
+.popup-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.popup-body {
+    -fx-padding: 18 22 6 22;
+}
+
+.popup-scroll,
+.popup-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.popup-buttons {
+    -fx-padding: 12 22 18 22;
+    -fx-spacing: 10;
+    -fx-alignment: center-right;
+}
+
+.popup-message-box {
+    -fx-alignment: top-left;
+}
+
+.popup-header {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.popup-message {
+    -fx-font-size: 13px;
+    -fx-text-fill: -muted;
+}
+
+/* the heading of an error pop-up ("Nothing was changed", "Could not load data") */
+.popup-header.popup-header-error {
+    -fx-text-fill: -danger;
+}
+
+.context-menu {
+    -fx-background-color: -line, #ffffff;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 10, 9;
+}
+
+.menu-item .label {
+    -fx-text-fill: -text;
+}
+
+.menu-item:focused {
+    -fx-background-color: -tint-strong;
+}
+
+.tooltip {
+    -fx-background-color: -ink;
+    -fx-background-radius: 6;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 12px;
+    -fx-padding: 5 9 5 9;
+}
+
+/* success message: a floating white pill, like a bottom bar */
+.toast {
+    -fx-background-color: -line, #ffffff;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 24, 23;
+    -fx-text-fill: -text;
+    -fx-font-weight: bold;
+    -fx-padding: 11 22 11 16;
+    -fx-graphic-text-gap: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.18), 16, 0.05, 0, 4);
+}
+
+.toast .icon {
+    -fx-fill: #1e8e3e;
+}
+
+/* ---------- Splash screen ---------- */
+.splash-root {
+    -fx-background-color: transparent;
+    -fx-padding: 24;
+}
+
+.splash-card {
+    -fx-background-color: -paper;
+    -fx-background-radius: 22;
+    -fx-border-color: -line;
+    -fx-border-width: 1;
+    -fx-border-radius: 22;
+    -fx-padding: 22 46 26 46;
+    -fx-spacing: 6;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 24, 0.05, 0, 6);
+}
+
+.splash-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.splash-subtitle {
+    -fx-text-fill: -muted;
+    -fx-font-size: 12.5px;
+}
+
+.splash-loading {
+    -fx-alignment: center;
+    -fx-padding: 14 0 0 0;
+}
+
+.splash-status {
+    -fx-text-fill: -muted;
+    -fx-font-size: 12.5px;
+}
+
+.splash-dot {
+    -fx-fill: -ink;
+}
+
+/* ---------- Sign-in page ---------- */
+.login-page {
+    -fx-background-color: -paper;
+    -fx-background-radius: 0 0 11 11;
+    -fx-padding: 24;
+}
+
+.login-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 20;
+    -fx-border-color: -line;
+    -fx-border-width: 1;
+    -fx-border-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 18, 0, 0, 4);
+}
+
+.login-brand {
+    -fx-background-color: -panel;
+    -fx-background-radius: 19 0 0 19;
+    -fx-border-color: transparent -line transparent transparent;
+    -fx-border-width: 0 1 0 0;
+    -fx-padding: 34 30 34 30;
+    -fx-spacing: 10;
+}
+
+.brand-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 0 0 0;
+}
+
+.brand-tagline {
+    -fx-text-fill: -muted;
+    -fx-font-size: 14px;
+}
+
+.brand-feature {
+    -fx-text-fill: -muted;
+    -fx-font-size: 13px;
+    -fx-graphic-text-gap: 12;
+    -fx-padding: 4 0 4 0;
+}
+
+.login-forms {
+    -fx-padding: 30 36 30 36;
+    -fx-alignment: center;
+}
+
+.login-form {
+    -fx-spacing: 3;
+    -fx-max-width: 440;
+}
+
+.login-heading {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.login-sub {
+    -fx-text-fill: -muted;
+    -fx-font-size: 13px;
+    -fx-padding: 0 0 8 0;
+}
+
+.login-form .btn-primary,
+.login-form .btn-create {
+    -fx-padding: 11 16 11 16;
+    -fx-font-size: 14px;
+}
+
+.login-form > .button {
+    -fx-translate-y: 0;
+}
+
+.login-switch {
+    -fx-alignment: center;
+    -fx-spacing: 4;
+    -fx-padding: 12 0 0 0;
+}
+
+.login-switch > .label {
+    -fx-text-fill: -muted;
+}
+
+.role-choices {
+    -fx-spacing: 8;
+}
+
+.toggle-button.role-choice {
+    -fx-background-color: -border, #ffffff;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 12, 11;
+    -fx-padding: 10 12 10 12;
+    -fx-alignment: top-left;
+    -fx-cursor: hand;
+}
+
+.toggle-button.role-choice:hover {
+    -fx-background-color: -ink, #ffffff;
+}
+
+.toggle-button.role-choice:selected {
+    -fx-background-color: -ink, -tint;
+    -fx-background-insets: 0, 2;
+}
+
+.role-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 13.5px;
+}
+
+.role-description {
+    -fx-text-fill: -muted;
+    -fx-font-size: 11.5px;
+}
+
+.role-choices.field-invalid .toggle-button.role-choice {
+    -fx-background-color: -danger, #ffffff;
+    -fx-background-insets: 0, 2;
+}
+
+/* ---------- Workspace: sidebar ---------- */
+.sidebar {
+    -fx-background-color: -panel;
+    -fx-background-radius: 0 0 0 11;
+    -fx-border-color: transparent -line transparent transparent;
+    -fx-border-width: 0 1 0 0;
+    -fx-padding: 16 12 14 12;
+    -fx-spacing: 6;
+    -fx-pref-width: 214;
+    -fx-min-width: 214;
+}
+
+.nav {
+    -fx-spacing: 3;
+}
+
+.sidebar-section {
+    -fx-text-fill: -muted;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 14 12 4 12;
+}
+
+.toggle-button.nav-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 20;
+    -fx-text-fill: -text;
+    -fx-font-size: 13.5px;
+    -fx-padding: 9 14 9 14;
+    -fx-graphic-text-gap: 12;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
+}
+
+.toggle-button.nav-button .icon {
+    -fx-fill: -ink;
+}
+
+.toggle-button.nav-button:hover {
+    -fx-background-color: -tint-strong;
+}
+
+.toggle-button.nav-button:selected {
+    /* the active entry is a black pill, like the active tab of a bottom bar */
+    -fx-background-color: -ink;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+}
+
+.toggle-button.nav-button:selected .icon {
+    -fx-fill: #ffffff;
+}
+
+.toggle-button.nav-button:focus-visible {
+    -fx-border-color: -border;
+    -fx-border-style: segments(2, 2);
+    -fx-border-radius: 20;
+}
+
+.button.sidebar-write {
+    -fx-padding: 10 14 10 14;
+    -fx-font-size: 13.5px;
+    -fx-alignment: center-left;
+}
+
+.sidebar-status {
+    -fx-text-fill: -muted;
+    -fx-font-size: 11.5px;
+    -fx-padding: 0 4 6 4;
+}
+
+.button.sidebar-exit {
+    -fx-background-color: transparent;
+    -fx-text-fill: -text;
+    -fx-border-color: -border;
+    -fx-border-style: solid;
+    -fx-border-radius: 20;
+    -fx-border-insets: 0;
+    -fx-alignment: center-left;
+    -fx-padding: 8 14 8 14;
+}
+
+.button.sidebar-exit .icon {
+    -fx-fill: -ink;
+}
+
+.button.sidebar-exit:hover {
+    -fx-background-color: -tint-strong;
+}
+
+/* ---------- Workspace: top bar with search and the signed-in user ---------- */
+.content {
+    -fx-background-color: -paper;
+    -fx-background-radius: 0 0 11 0;
+}
+
+.top-bar {
+    -fx-padding: 12 22 12 22;
+    -fx-spacing: 10;
+    -fx-alignment: center-left;
+    -fx-fill-height: false;   /* the search box keeps its own height */
+    -fx-border-color: transparent transparent -line transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.search-box {
+    -fx-background-color: -border, #ffffff;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 22, 21;
+    -fx-padding: 2 6 2 14;
+    -fx-spacing: 8;
+    -fx-alignment: center-left;
+    -fx-max-width: 620;
+    -fx-min-height: 40;
+}
+
+.search-box:focus-within {
+    -fx-background-color: -ink, #ffffff;
+    -fx-background-insets: 0, 1.5;
+}
+
+.text-field.search-field,
+.text-field.search-field:focused {
+    -fx-background-color: transparent;
+    -fx-padding: 6 0 6 0;
+    -fx-font-size: 13.5px;
+}
+
+.button.search-clear {
+    -fx-background-color: transparent;
+    -fx-background-radius: 14;
+    -fx-padding: 6;
+    -fx-border-color: transparent;
+}
+
+.button.search-clear .icon {
+    -fx-fill: -ink;
+}
+
+.button.search-clear:hover {
+    -fx-background-color: -tint-strong;
+}
+
+.user-chip {
+    -fx-spacing: 10;
+    -fx-alignment: center-left;
+    -fx-padding: 0 4 0 4;
+}
+
+/* avatar: a white circle with a black outline and initial */
+.avatar {
+    -fx-background-color: -ink, #ffffff;
+    -fx-background-insets: 0, 1.5;
+    -fx-background-radius: 50%;
+}
+
+.avatar-letter {
+    -fx-text-fill: -ink;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+}
+
+.user-name {
+    -fx-font-weight: bold;
+}
+
+.role-badge {
+    -fx-background-color: -tint-strong;
+    -fx-background-radius: 8;
+    -fx-text-fill: -text;
+    -fx-font-size: 10.5px;
+    -fx-font-weight: bold;
+    -fx-padding: 1 8 1 8;
+}
+
+/* ---------- Screens ---------- */
+.screen-host {
+    -fx-background-color: -paper;
+    -fx-background-radius: 0 0 11 0;
+}
+
+.screen {
+    -fx-background-color: -paper;
+    -fx-padding: 20 24 18 24;
+    -fx-spacing: 14;
+}
+
+.screen-header {
+    -fx-alignment: center-left;
+    -fx-spacing: 12;
+}
+
+.screen-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.screen-subtitle,
+.hint {
+    -fx-text-fill: -muted;
+    -fx-font-size: 12.5px;
+}
+
+.filter-bar {
+    -fx-hgap: 8;
+    -fx-vgap: 8;
+    -fx-alignment: center-left;
+}
+
+.filter-label {
+    -fx-text-fill: -muted;
+}
+
+/* smaller filters next to a screen title (Discover) */
+.filter-bar.compact {
+    -fx-hgap: 6;
+    -fx-padding: 0 0 0 10;
+}
+
+.filter-bar.compact .filter-label,
+.filter-bar.compact .combo-box-base,
+.filter-bar.compact .button {
+    -fx-font-size: 12px;
+}
+
+.filter-bar.compact .combo-box > .list-cell {
+    -fx-padding: 4 10 4 10;
+}
+
+.filter-bar.compact .combo-box-base > .arrow-button {
+    -fx-padding: 0 10 0 6;
+}
+
+.filter-bar.compact .button {
+    -fx-padding: 4 12 4 12;
+}
+
+.pager {
+    -fx-alignment: center-left;
+    -fx-spacing: 16;
+}
+
+.empty-state {
+    -fx-text-fill: -muted;
+    -fx-font-size: 14px;
+    -fx-padding: 30 0 30 0;
+}
+
+.note {
+    -fx-background-color: -tint;
+    -fx-background-radius: 10;
+    -fx-padding: 9 12 9 12;
+    -fx-font-size: 12.5px;
+    -fx-text-fill: -muted;
+}
+
+.status-badge {
+    -fx-background-radius: 10;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 2 10 2 10;
+}
+
+.status-badge.published {
+    -fx-background-color: -tint-strong;
+    -fx-text-fill: -text;
+}
+
+.status-badge.draft {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: -muted;
+    -fx-border-color: -border;
+    -fx-border-style: segments(3, 2);
+    -fx-border-radius: 10;
+}
+
+/* ---------- Forms (inside pop-ups) ---------- */
+.form {
+    -fx-spacing: 3;
+}
+
+.form-row {
+    -fx-spacing: 12;
+}
+
+/* the cells of a form row share its width equally, however long their messages are */
+.form-cell {
+    -fx-spacing: 3;
+    -fx-pref-width: 1;
+}
+
+.inline-add {
+    -fx-spacing: 8;
+    -fx-alignment: center-left;
+    -fx-padding: 4 0 0 0;
+}
+
+.field-label {
+    -fx-font-weight: bold;
+    -fx-padding: 8 0 3 0;
+}
+
+/* error banner at the top of a form: pale red with a red bar on the left */
+.form-message {
+    -fx-background-color: -danger, -danger-soft;
+    -fx-background-insets: 0, 0 0 0 4;
+    -fx-background-radius: 8, 0 8 8 0;
+    -fx-padding: 9 12 9 16;
+    -fx-font-weight: bold;
+    -fx-text-fill: -danger;
+}
+
+/* ---------- Validation: red message under the field and a red outline ---------- */
+.field-error {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -danger;
+}
+
+.text-field.field-invalid,
+.combo-box-base.field-invalid,
+.list-view.field-invalid {
+    -fx-background-color: -danger, #ffffff;
+    -fx-background-insets: 0, 2;
+}
+
+.text-area.field-invalid {
+    -fx-border-color: -danger;
+    -fx-border-width: 2;
+    -fx-padding: 0;
+}
+
+.star-picker.field-invalid {
+    -fx-border-color: -danger;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 8;
+}
+
+/* ---------- Tag input in the post editor: chips + a field, styled as one text box ---------- */
+.tag-input {
+    -fx-background-color: -border, #ffffff;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 10, 9;
+    -fx-padding: 5 8 5 8;
+    -fx-hgap: 6;
+    -fx-vgap: 6;
+    -fx-alignment: center-left;
+    -fx-cursor: text;
+}
+
+.tag-input:focus-within {
+    -fx-background-color: -ink, #ffffff;
+    -fx-background-insets: 0, 1.5;
+}
+
+.tag-input.field-invalid {
+    -fx-background-color: -danger, #ffffff;
+    -fx-background-insets: 0, 2;
+}
+
+.text-field.tag-input-field,
+.text-field.tag-input-field:focused {
+    -fx-background-color: transparent;
+    -fx-padding: 3 2 3 2;
+}
+
+/* chosen tag: light grey pill with a black ✕ */
+.button.tag-token {
+    -fx-background-color: -tint-strong;
+    -fx-background-radius: 14;
+    -fx-text-fill: -text;
+    -fx-padding: 3 9 3 10;
+    -fx-font-size: 12px;
+    -fx-graphic-text-gap: 6;
+}
+
+.button.tag-token .icon {
+    -fx-fill: -ink;
+}
+
+.button.tag-token:hover {
+    -fx-background-color: -border;
+}
+
+.tag-suggestions-row {
+    -fx-spacing: 8;
+    -fx-alignment: top-left;
+    -fx-padding: 4 0 0 0;
+}
+
+.tag-suggestions {
+    -fx-hgap: 6;
+    -fx-vgap: 6;
+}
+
+/* ---------- Discover: post cards (light grey, no outline) ---------- */
+.feed-page {
+    -fx-padding: 2 4 12 4;
+}
+
+.feed {
+    -fx-spacing: 12;
+}
+
+.post-card {
+    -fx-background-color: -tint;
+    -fx-background-radius: 22;
+    -fx-padding: 18 24 16 24;
+    -fx-spacing: 8;
+    -fx-cursor: hand;
+}
+
+.post-card:hover {
+    -fx-background-color: -tint-strong;
+}
+
+.card-author {
+    -fx-font-weight: bold;
+}
+
+.card-meta {
+    -fx-text-fill: -muted;
+    -fx-font-size: 12px;
+}
+
+.card-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.card-excerpt {
+    -fx-text-fill: -muted;
+    -fx-font-size: 13.5px;
+    -fx-line-spacing: 3;
+}
+
+.card-stat {
+    -fx-font-size: 12.5px;
+    -fx-font-weight: bold;
+    -fx-graphic-text-gap: 5;
+}
+
+/* ---------- Reading view: article in the middle, ratings and comments on the right ---------- */
+.article-layout {
+    -fx-background-color: -paper;
+}
+
+.article-page {
+    -fx-padding: 18 32 40 32;
+}
+
+.article {
+    -fx-spacing: 12;
+}
+
+.article-top {
+    -fx-alignment: center-left;
+}
+
+.tag-row {
+    -fx-hgap: 6;
+    -fx-vgap: 6;
+}
+
+.article-title {
+    -fx-font-size: 34px;
+    -fx-font-weight: bold;
+}
+
+.article-meta {
+    -fx-spacing: 12;
+    -fx-alignment: center-left;
+}
+
+.article-body {
+    -fx-spacing: 14;
+    -fx-padding: 6 0 6 0;
+}
+
+.article-paragraph {
+    -fx-font-size: 15.5px;
+    -fx-line-spacing: 5;
+}
+
+.section-title {
+    -fx-font-size: 19px;
+    -fx-font-weight: bold;
+}
+
+.side-scroll {
+    -fx-border-color: transparent transparent transparent -line;
+    -fx-border-width: 0 0 0 1;
+}
+
+.article-side {
+    -fx-padding: 16 16 20 16;
+    -fx-spacing: 12;
+}
+
+.side-card {
+    -fx-background-color: -tint;
+    -fx-background-radius: 18;
+    -fx-padding: 14 16 14 16;
+    -fx-spacing: 8;
+}
+
+.side-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.rating-head {
+    -fx-spacing: 12;
+    -fx-alignment: center-left;
+}
+
+.rating-big {
+    -fx-font-size: 40px;
+    -fx-font-weight: bold;
+}
+
+.stars {
+    -fx-font-size: 16px;
+}
+
+.stars-small {
+    -fx-font-size: 13px;
+    -fx-padding: 0 0 0 36;
+}
+
+.rating-bars {
+    -fx-spacing: 6;
+}
+
+.bar-label,
+.bar-count {
+    -fx-text-fill: -muted;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-min-width: 30;
+}
+
+.rate-box {
+    -fx-padding: 6 0 0 0;
+    -fx-border-color: -line transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+}
+
+.rate-hint {
+    -fx-text-fill: -muted;
+    -fx-font-size: 12.5px;
+    -fx-font-weight: bold;
+    -fx-padding: 6 0 0 0;
+}
+
+.star-picker {
+    -fx-spacing: 2;
+    -fx-padding: 2;
+}
+
+.button.star-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -ink;
+    -fx-font-size: 26px;
+    -fx-font-weight: normal;
+    -fx-padding: 0 3 0 3;
+    -fx-border-color: transparent;
+}
+
+.button.star-button:hover {
+    -fx-background-color: transparent;
+    -fx-scale-x: 1.15;
+    -fx-scale-y: 1.15;
+}
+
+.button.star-button.star-big {
+    -fx-font-size: 34px;
+}
+
+.rating-words {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.compose-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+/* Comments | Reviews switch: the chosen one is a light grey pill */
+.segmented {
+    -fx-background-color: transparent;
+    -fx-spacing: 4;
+}
+
+.toggle-button.segment {
+    -fx-background-color: transparent;
+    -fx-background-radius: 20;
+    -fx-text-fill: -text;
+    -fx-font-size: 13px;
+    -fx-padding: 8 10 8 10;
+    -fx-cursor: hand;
+}
+
+.toggle-button.segment:hover {
+    -fx-background-color: -tint;
+}
+
+.toggle-button.segment:selected {
+    -fx-background-color: -tint-strong;
+    -fx-font-weight: bold;
+}
+
+.item-list {
+    -fx-spacing: 8;
+}
+
+.item-card {
+    -fx-background-color: -tint;
+    -fx-background-radius: 16;
+    -fx-padding: 10 14 10 14;
+}
+
+.item-text {
+    -fx-font-size: 13px;
+    -fx-line-spacing: 2;
+    -fx-padding: 0 0 0 36;
+}
+
+/* ---------- Admin dashboard ---------- */
+.stat-cards {
+    -fx-spacing: 12;
+}
+
+.stat-card {
+    -fx-background-color: -tint;
+    -fx-background-radius: 18;
+    -fx-padding: 16 18 16 18;
+    -fx-min-width: 150;
+}
+
+.stat-title {
+    -fx-text-fill: -muted;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-graphic-text-gap: 8;
+}
+
+.stat-value {
+    -fx-font-size: 34px;
+    -fx-font-weight: bold;
+}
+
+.stat-detail {
+    -fx-text-fill: -muted;
+    -fx-font-size: 12px;
+}
+
+.dashboard-row {
+    -fx-spacing: 12;
+}
+
+.panel {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 18;
+    -fx-border-color: -line;
+    -fx-border-radius: 18;
+    -fx-padding: 14 18 16 18;
+    -fx-spacing: 8;
+}
+
+.panel-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.rank-list {
+    -fx-spacing: 0;
+}
+
+.rank-row {
+    -fx-padding: 4 0 4 0;
+    -fx-border-color: transparent transparent -line transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.rank-number {
+    -fx-text-fill: -muted;
+    -fx-font-weight: bold;
+    -fx-min-width: 20;
+}
+
+.rank-value {
+    -fx-font-weight: bold;
+    -fx-min-width: 90;
+    -fx-alignment: center-right;
+}
+
+
+/* ---------- Fonts ---------- */
+/* All text is Xmind (set in .root). The handwriting font Zeyada is used only for a few titles:
+   the app name, page headings, section headings and pop-up titles. Zeyada is thin and has no
+   bold face, so these titles are set large and at normal weight. */
+.title-text,
+.splash-title,
+.brand-title,
+.login-heading,
+.screen-title,
+.side-title,
+.panel-title,
+.popup-title {
+    -fx-font-family: "Zeyada";
+    -fx-font-weight: normal;
+    /* in a JavaFX label Zeyada's line box is about 2.1 × its size; trim the extra space */
+    -fx-label-padding: -0.42em 0 -0.42em 0;
+}
+
+.title-text {
+    -fx-font-size: 22px;
+}
+
+.splash-title {
+    -fx-font-size: 42px;
+}
+
+.brand-title {
+    -fx-font-size: 42px;
+    /* wraps onto two lines: keep the full line box (no trim) and pull the lines together */
+    -fx-label-padding: 0;
+    -fx-line-spacing: -36px;
+    -fx-padding: 0;
+}
+
+.login-heading,
+.screen-title {
+    -fx-font-size: 40px;
+}
+
+.side-title,
+.panel-title {
+    -fx-font-size: 28px;
+}
+
+.popup-title {
+    -fx-font-size: 22px;
+}

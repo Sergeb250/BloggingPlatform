@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Signed-in workspace: light sidebar (its entries depend on the user's role), a top bar
+     with the search field and the signed-in user, and the area where the screens appear. -->
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.bloggingplatform.controller.ShellController" styleClass="shell">
+    <left>
+        <VBox styleClass="sidebar">
+            <!-- the entries scroll if the window is too short for all of them -->
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="nav-scroll" VBox.vgrow="ALWAYS">
+                <VBox fx:id="navBox" styleClass="nav"/>
+            </ScrollPane>
+            <Label fx:id="connectionLabel" styleClass="sidebar-status" maxWidth="Infinity"/>
+            <Button fx:id="exitButton" text="Exit" styleClass="sidebar-exit" maxWidth="Infinity" onAction="#onExit">
+                <tooltip><Tooltip text="Close the application"/></tooltip>
+            </Button>
+        </VBox>
+    </left>
+    <center>
+        <VBox styleClass="content">
+            <HBox styleClass="top-bar">
+                <HBox styleClass="search-box" HBox.hgrow="ALWAYS">
+                    <StackPane fx:id="searchIcon" styleClass="search-icon"/>
+                    <TextField fx:id="searchField" styleClass="search-field" HBox.hgrow="ALWAYS" onAction="#onSearch"/>
+                    <Button fx:id="clearSearchButton" styleClass="search-clear" focusTraversable="false"
+                            onAction="#onClearSearch">
+                        <tooltip><Tooltip text="Clear the search"/></tooltip>
+                    </Button>
+                </HBox>
+                <Button fx:id="searchButton" text="Search" styleClass="btn-search" onAction="#onSearch"/>
+                <Region HBox.hgrow="SOMETIMES" minWidth="12"/>
+                <HBox styleClass="user-chip">
+                    <StackPane styleClass="avatar" minWidth="36" minHeight="36" prefWidth="36" prefHeight="36" maxWidth="36" maxHeight="36">
+                        <Label fx:id="avatarLetter" styleClass="avatar-letter"/>
+                    </StackPane>
+                    <VBox styleClass="user-text">
+                        <Label fx:id="userName" styleClass="user-name"/>
+                        <Label fx:id="userRole" styleClass="role-badge"/>
+                    </VBox>
+                </HBox>
+                <Button fx:id="signOutButton" text="Sign out" onAction="#onSignOut"/>
+            </HBox>
+            <StackPane fx:id="screenHost" styleClass="screen-host" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </center>
+</BorderPane>
