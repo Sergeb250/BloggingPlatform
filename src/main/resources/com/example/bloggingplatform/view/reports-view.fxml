@@ -7,7 +7,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<!-- Admin dashboard: totals, the best-rated and most-discussed posts, and activity per user. -->
+<!-- Admin dashboard (analytics): totals and cache statistics, the best-rated and most-discussed
+     posts, posts per tag, and activity per user. -->
 <ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.bloggingplatform.controller.ReportController"
             fitToWidth="true" hbarPolicy="NEVER" styleClass="dashboard-scroll">
@@ -27,6 +28,10 @@
             <VBox styleClass="panel" HBox.hgrow="ALWAYS">
                 <Label text="Most commented posts" styleClass="panel-title"/>
                 <VBox fx:id="mostCommented" styleClass="rank-list"/>
+            </VBox>
+            <VBox styleClass="panel" HBox.hgrow="ALWAYS">
+                <Label text="Posts per tag" styleClass="panel-title"/>
+                <VBox fx:id="postsPerTag" styleClass="rank-list"/>
             </VBox>
         </HBox>
         <VBox styleClass="panel">

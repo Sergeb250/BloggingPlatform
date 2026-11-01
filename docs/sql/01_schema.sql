@@ -38,7 +38,12 @@ CREATE TABLE posts (
                        PRIMARY KEY (post_id),
                        CONSTRAINT fk_posts_author FOREIGN KEY (author_id)
                            REFERENCES users (user_id) ON DELETE CASCADE,
-                       CONSTRAINT uq_posts_author_title UNIQUE (author_id, title)
+                       CONSTRAINT uq_posts_author_title UNIQUE (author_id, title),
+
+                       -- Phase 4 indexes (for an existing database: CREATE INDEX ... ON posts (...))
+                       INDEX idx_posts_status_created (status, created_at),    -- published posts, newest first (Discover, paging)
+                       INDEX idx_posts_author_created (author_id, created_at), -- one author's posts, newest first (My posts)
+                       INDEX idx_posts_title (title)                           -- posts in title order (drop-down lists)
 ) ;
 
 -- -----------------------------------------------------

@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Phase 3 before / after timings (requirement 3.1-c). The results are written to
- * {@code target/phase-3-timings-*.txt} and copied to {@code docs/testing/phase-3/timings.txt}.
+ * {@code target/phase-3-timings-*.txt} (summarised in the README).
  * Only correctness is asserted: timings depend on the computer.
  */
 class PerformanceTimingsTest {

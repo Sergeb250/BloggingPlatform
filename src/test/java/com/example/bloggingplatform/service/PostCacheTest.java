@@ -2,6 +2,7 @@ package com.example.bloggingplatform.service;
 
 import com.example.bloggingplatform.cache.PostCache;
 import com.example.bloggingplatform.dao.DaoException;
+import com.example.bloggingplatform.model.CacheStats;
 import com.example.bloggingplatform.model.Comment;
 import com.example.bloggingplatform.model.Post;
 import com.example.bloggingplatform.model.PostFilter;
@@ -60,6 +61,24 @@ class PostCacheTest {
         assertEquals(List.of(second, first), cache.getPublished());
         assertEquals(first, cache.getPublished(first.getId()));
         assertNull(cache.getPublished(draft.getId()));   // drafts always come from the database
+    }
+
+    @Test
+    void statisticsCountHitsMissesAndCachedPosts() {
+        assertEquals(0, cache.getStats().getHitRate(), "nothing read yet");
+
+        discover();                          // first read: a miss (loads from the database)
+        discover();                          // a hit
+        postService.findById(first.getId()); // a hit
+        CacheStats stats = cache.getStats();
+
+        assertEquals(1, stats.getMisses());
+        assertEquals(2, stats.getHits());
+        assertEquals(2, stats.getCachedPosts());
+        assertEquals(100.0 * 2 / 3, stats.getHitRate(), 0.001);
+
+        cache.clear();
+        assertEquals(0, cache.getStats().getCachedPosts(), "cleared: nothing in memory until the next read");
     }
 
     @Test

@@ -46,6 +46,6 @@ public record AppContext(Session session, AuthService auth, UserService users, P
                 new CommentService(commentDAO, postDAO, userDAO, session, cache),
                 new ReviewService(reviewDAO, postDAO, userDAO, session, cache),
                 tagService,
-                new ReportService(reportDAO, postDAO, session));
+                new ReportService(reportDAO, postDAO, session, cache));
     }
 }

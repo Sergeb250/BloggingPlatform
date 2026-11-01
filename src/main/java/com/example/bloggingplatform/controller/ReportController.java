@@ -1,6 +1,7 @@
 package com.example.bloggingplatform.controller;
 
 import com.example.bloggingplatform.service.AppContext;
+import com.example.bloggingplatform.model.CacheStats;
 import com.example.bloggingplatform.model.Post;
 import com.example.bloggingplatform.model.Role;
 import com.example.bloggingplatform.model.SiteSummary;
@@ -18,21 +19,26 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
- * Admin dashboard: totals per role and status, the best-rated and most-commented posts (click to
- * read them), and a per-user activity table from which an admin can open that user's posts or
- * delete the account. The search bar filters the activity table by name or role.
+ * Admin dashboard (analytics): totals per role and status, how the post cache is doing, the
+ * best-rated and most-commented posts (click to read them), posts per tag, and a per-user activity
+ * table from which an admin can open that user's posts or delete the account. The search bar
+ * filters the activity table by name or role.
  */
 public class ReportController extends BaseController {
 
     private static final int TOP = 5;
+    private static final int TAG_ROWS = 8;
 
     @FXML private HBox statCards;
     @FXML private VBox topRated;
     @FXML private VBox mostCommented;
+    @FXML private VBox postsPerTag;
     @FXML private Label activityHint;
     @FXML private TableView<UserActivity> activityTable;
     @FXML private TableColumn<UserActivity, String> userColumn;
@@ -73,19 +79,24 @@ public class ReportController extends BaseController {
     public void refresh() {
         load(() -> {
             SiteSummary summary = app.reports().summary();
+            CacheStats cache = app.reports().cacheStats();
             statCards.getChildren().setAll(
-                    statCard(Icons.USERS, "Users", summary.getUsers(),
+                    statCard(Icons.USERS, "Users", String.valueOf(summary.getUsers()),
                             "%d admins · %d authors · %d readers".formatted(summary.getAdmins(), summary.getAuthors(), summary.getReaders())),
-                    statCard(Icons.POSTS, "Posts", summary.getPosts(),
+                    statCard(Icons.POSTS, "Posts", String.valueOf(summary.getPosts()),
                             "%d published · %d drafts".formatted(summary.getPublished(), summary.getDrafts())),
-                    statCard(Icons.COMMENTS, "Comments", summary.getComments(),
+                    statCard(Icons.COMMENTS, "Comments", String.valueOf(summary.getComments()),
                             summary.getPosts() == 0 ? "" : "%.1f per post".formatted((double) summary.getComments() / summary.getPosts())),
-                    statCard(Icons.REVIEWS, "Reviews", summary.getReviews(), summary.getAverageRating() == null ? "no ratings yet"
-                            : "average %s %.2f".formatted(BlogWidgets.stars(summary.getAverageRating()), summary.getAverageRating())));
+                    statCard(Icons.REVIEWS, "Reviews", String.valueOf(summary.getReviews()), summary.getAverageRating() == null ? "no ratings yet"
+                            : "average %s %.2f".formatted(BlogWidgets.stars(summary.getAverageRating()), summary.getAverageRating())),
+                    statCard(Icons.DISCOVER, "Post cache", "%.0f%% hits".formatted(cache.getHitRate()),
+                            "hits %d · misses %d · %d posts in memory · last load %d ms".formatted(cache.getHits(),
+                                    cache.getMisses(), cache.getCachedPosts(), cache.getLastLoadMillis())));
             topRated.getChildren().setAll(ranking(app.reports().topRated(TOP),
                     post -> "★ %.1f".formatted(post.getAverageRating())));
             mostCommented.getChildren().setAll(ranking(app.reports().mostCommented(TOP),
                     post -> post.getCommentCount() + (post.getCommentCount() == 1 ? " comment" : " comments")));
+            postsPerTag.getChildren().setAll(tagBars(app.reports().postsPerTag()));
             activity = app.reports().userActivity();
         });
         applyQuery();
@@ -124,10 +135,40 @@ public class ReportController extends BaseController {
         }
     }
 
-    private static Node statCard(String icon, String title, long value, String detail) {
+    /** One bar per tag (the most used tags first), as long as its share of the biggest count. */
+    private static List<Node> tagBars(Map<String, Long> counts) {
+        if (counts.isEmpty()) {
+            Label empty = new Label("No tags yet.");
+            empty.getStyleClass().add("empty-state");
+            return List.of(empty);
+        }
+        long most = Math.max(1, counts.values().iterator().next());   // the first entry has the most posts
+        List<Node> rows = new ArrayList<>();
+        for (Map.Entry<String, Long> tag : counts.entrySet()) {
+            if (rows.size() == TAG_ROWS) {
+                break;
+            }
+            Label name = new Label("#" + tag.getKey());
+            name.getStyleClass().add("tag-bar-name");
+            Region bar = new Region();
+            bar.getStyleClass().add("tag-bar");
+            bar.setPrefWidth(Math.max(4, 100.0 * tag.getValue() / most));
+            bar.setMinWidth(Region.USE_PREF_SIZE);   // never squeezed: the length is the information
+            Label count = new Label(String.valueOf(tag.getValue()));
+            count.getStyleClass().add("tag-bar-count");
+            count.setMinWidth(Region.USE_PREF_SIZE);
+            HBox row = new HBox(8, name, bar, count);
+            row.setAlignment(Pos.CENTER_LEFT);
+            row.getStyleClass().add("rank-row");
+            rows.add(row);
+        }
+        return rows;
+    }
+
+    private static Node statCard(String icon, String title, String value, String detail) {
         Label name = new Label(title, Icons.of(icon, 18));
         name.getStyleClass().add("stat-title");
-        Label number = new Label(String.valueOf(value));
+        Label number = new Label(value);
         number.getStyleClass().add("stat-value");
         Label more = new Label(detail);
         more.getStyleClass().add("stat-detail");

@@ -1,25 +1,45 @@
 package com.example.bloggingplatform.service;
 
+import com.example.bloggingplatform.cache.PostCache;
 import com.example.bloggingplatform.dao.PostDAO;
 import com.example.bloggingplatform.dao.ReportDAO;
+import com.example.bloggingplatform.model.CacheStats;
 import com.example.bloggingplatform.model.Post;
 import com.example.bloggingplatform.model.SiteSummary;
 import com.example.bloggingplatform.model.UserActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-/** The admin dashboard: site totals, activity per user and the stand-out posts. Admins only. */
+/**
+ * The admin dashboard (analytics): site totals, activity per user, the stand-out posts, posts per
+ * tag and how the post cache is doing. Admins only.
+ */
 public class ReportService {
 
     private final ReportDAO reports;
     private final PostDAO posts;
     private final Session session;
+    private final PostCache cache;
 
-    public ReportService(ReportDAO reports, PostDAO posts, Session session) {
+    public ReportService(ReportDAO reports, PostDAO posts, Session session, PostCache cache) {
         this.reports = reports;
         this.posts = posts;
         this.session = session;
+        this.cache = cache;
+    }
+
+    /** Every tag with its number of posts, most used first. */
+    public Map<String, Long> postsPerTag() {
+        session.requireAdmin("see reports");
+        return reports.getPostsPerTag();
+    }
+
+    /** Cache hits and misses since the app started, the posts in memory and the last load time. */
+    public CacheStats cacheStats() {
+        session.requireAdmin("see reports");
+        return cache.getStats();
     }
 
     public SiteSummary summary() {

@@ -1,16 +1,27 @@
 package com.example.bloggingplatform.dao;
 
+import com.mongodb.MongoException;
+import com.mongodb.MongoTimeoutException;
+
 import java.sql.SQLException;
 
 /**
- * Thrown by the DAOs when a database operation fails. It wraps the {@link SQLException} and adds
- * a message a user can act on, so the screens never show raw SQL errors.
+ * Thrown by the DAOs when a database operation fails. It wraps the {@link SQLException} (MySQL) or
+ * {@link MongoException} (MongoDB) and adds a message a user can act on, so the screens never show
+ * raw database errors.
  */
 public class DaoException extends RuntimeException {
 
     /** @param action what was being done, e.g. "Could not save the post." */
     public DaoException(String action, SQLException cause) {
         super(action + " " + reason(cause), cause);
+    }
+
+    /** The MongoDB version (Phase 4): the driver throws MongoException instead of SQLException. */
+    public DaoException(String action, MongoException cause) {
+        super(action + " " + (cause instanceof MongoTimeoutException
+                ? "Cannot reach MongoDB Atlas: check the internet connection and URI in config/MongoConnection.java."
+                : "(" + cause.getMessage() + ")"), cause);
     }
 
     /** The most common MySQL problems in plain words (vendor error code, or SQL state "08" for connection errors). */

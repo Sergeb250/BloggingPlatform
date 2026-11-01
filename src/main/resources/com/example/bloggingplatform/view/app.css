@@ -1587,6 +1587,23 @@
     -fx-alignment: center-right;
 }
 
+/* posts per tag: name, a grey bar as long as the count, the count */
+.tag-bar-name {
+    -fx-min-width: 110;
+    -fx-pref-width: 110;
+}
+
+.tag-bar {
+    -fx-background-color: -border;
+    -fx-background-radius: 4;
+    -fx-min-height: 10;
+    -fx-max-height: 10;
+}
+
+.tag-bar-count {
+    -fx-font-weight: bold;
+}
+
 
 /* ---------- Fonts ---------- */
 /* All text is Xmind (set in .root). The handwriting font Zeyada is used only for a few titles:

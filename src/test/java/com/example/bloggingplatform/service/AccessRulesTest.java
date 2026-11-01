@@ -127,8 +127,10 @@ class AccessRulesTest {
         assertThrows(AccessDeniedException.class, () -> tagsAsAuthor.rename(tagId, "jvm"));
         assertThrows(AccessDeniedException.class, () -> tagsAsAuthor.delete(tagId));
 
-        ReportService reportsAsAuthor = new ReportService(null, posts, FakeDaos.sessionOf(author));
+        ReportService reportsAsAuthor = new ReportService(null, posts, FakeDaos.sessionOf(author), cache);
         assertThrows(AccessDeniedException.class, () -> reportsAsAuthor.topRated(5));
+        assertThrows(AccessDeniedException.class, reportsAsAuthor::postsPerTag);
+        assertThrows(AccessDeniedException.class, reportsAsAuthor::cacheStats);
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.example.bloggingplatform.dao;
 
 import com.example.bloggingplatform.dao.impl.CommentDAOImpl;
 import com.example.bloggingplatform.dao.impl.PostDAOImpl;
+import com.example.bloggingplatform.dao.impl.ReportDAOImpl;
 import com.example.bloggingplatform.dao.impl.ReviewDAOImpl;
 import com.example.bloggingplatform.dao.impl.TagDAOImpl;
 import com.example.bloggingplatform.dao.impl.UserDAOImpl;
@@ -23,6 +24,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.example.bloggingplatform.model.PostStatus.DRAFT;
@@ -297,6 +299,22 @@ class DAOIntegrationTest {
         assertEquals(List.of(theirs), tags.getTagsUsedBy(other.getId()));
         assertEquals(mine, tags.getTagByName(mine.getName()));
         assertNull(tags.getTagByName(run + "-nothing"));
+    }
+
+    @Test
+    void postsPerTagCountsEveryPostOfATagIncludingUnusedTags() {
+        User author = newUser("counter", Role.AUTHOR);
+        Tag busy = newTag("busy");
+        Tag quiet = newTag("quiet");
+        Tag unused = newTag("unused");
+        newPost(author, run + " one", "body", PUBLISHED, List.of(busy, quiet));
+        newPost(author, run + " two", "body", DRAFT, List.of(busy));
+
+        Map<String, Long> counts = new ReportDAOImpl().getPostsPerTag();
+
+        assertEquals(2L, counts.get(busy.getName()));
+        assertEquals(1L, counts.get(quiet.getName()));
+        assertEquals(0L, counts.get(unused.getName()));
     }
 
     // ---------- helpers ----------

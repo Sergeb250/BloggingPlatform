@@ -14,7 +14,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /** The MySQL version of {@link ReportDAO}. Every value goes into a ? placeholder, so typed text can never change the SQL. */
 public class ReportDAOImpl implements ReportDAO {
@@ -82,5 +84,28 @@ public class ReportDAOImpl implements ReportDAO {
             throw new DaoException("Could not load the activity.", e);
         }
         return rows;
+    }
+
+    /** Every tag name with its number of posts (0 for unused tags); most used first. */
+    @Override
+    public Map<String, Long> getPostsPerTag() {
+        Map<String, Long> counts = new LinkedHashMap<>();
+        String sql = """
+                SELECT t.name, COUNT(pt.post_id) AS posts
+                FROM tags t
+                LEFT JOIN post_tags pt ON pt.tag_id = t.tag_id
+                GROUP BY t.tag_id, t.name
+                ORDER BY posts DESC, t.name
+                """;
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                counts.put(rs.getString("name"), rs.getLong("posts"));
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Could not count the posts per tag.", e);
+        }
+        return counts;
     }
 }

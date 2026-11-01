@@ -2,6 +2,7 @@ package com.example.bloggingplatform.cache;
 
 import com.example.bloggingplatform.algorithms.MergeSort;
 import com.example.bloggingplatform.dao.PostDAO;
+import com.example.bloggingplatform.model.CacheStats;
 import com.example.bloggingplatform.model.Post;
 import com.example.bloggingplatform.model.PostSort;
 import com.example.bloggingplatform.model.PostStatus;
@@ -27,6 +28,10 @@ public class PostCache {
     private List<Post> published;        // newest first; null means "not loaded" (empty cache)
     private Map<Integer, Post> byId;     // post id → post, so one post is found in O(1)
     private SearchIndex index;           // word → post ids, for the search bar
+
+    private int hits;                    // reads answered from memory
+    private int misses;                  // reads that had to load from the database
+    private long lastLoadMillis;         // how long the last load took
 
     public PostCache(PostDAO posts) {
         this.posts = posts;
@@ -57,10 +62,19 @@ public class PostCache {
         index = null;
     }
 
+    /** Hits, misses, cached posts and the last load time, for the dashboard (Phase 4). */
+    public CacheStats getStats() {
+        int cachedPosts = published == null ? 0 : published.size();
+        return new CacheStats(hits, misses, cachedPosts, lastLoadMillis);
+    }
+
     private void loadIfEmpty() {
         if (published != null) {
-            return;   // cache hit
+            hits++;
+            return;
         }
+        misses++;
+        long start = System.nanoTime();
         List<Post> list = new ArrayList<>();
         for (Post post : posts.getAllPosts()) {
             if (post.getStatus() == PostStatus.PUBLISHED) {
@@ -76,5 +90,6 @@ public class PostCache {
         index = new SearchIndex(list);
         byId = ids;
         published = Collections.unmodifiableList(list);
+        lastLoadMillis = (System.nanoTime() - start) / 1_000_000;
     }
 }
